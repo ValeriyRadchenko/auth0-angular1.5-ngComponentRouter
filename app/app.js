@@ -23,7 +23,10 @@ angular.module('app', [
     ]
 })
     
-.config( function myAppConfig (authProvider, $httpProvider, $locationProvider, jwtInterceptorProvider) {
+.config(['authProvider', '$httpProvider', 'jwtInterceptorProvider', myAppConfig])
+.run(['$rootScope', 'auth', 'store', 'jwtHelper', '$location', myAppRun]);
+
+function myAppConfig (authProvider, $httpProvider, jwtInterceptorProvider) {
 
     authProvider.init({
         domain: AUTH0_DOMAIN,
@@ -31,35 +34,35 @@ angular.module('app', [
         loginUrl: '/login'
     });
 
-    authProvider.on('loginSuccess', function($location, profilePromise, idToken, store) {
+    authProvider.on('loginSuccess', ['$location', 'profilePromise', 'idToken', 'store', function($location, profilePromise, idToken, store) {
         console.log("Login Success");
         profilePromise.then(function(profile) {
             store.set('profile', profile);
             store.set('token', idToken);
         });
         $location.path('/');
-    });
+    }]);
 
     authProvider.on('loginFailure', function() {
         alert("Error");
     });
 
-    authProvider.on('authenticated', function($location) {
+    authProvider.on('authenticated', ['$location', function($location) {
         console.log("Authenticated");
 
-    });
+    }]);
 
-    jwtInterceptorProvider.tokenGetter = function(store) {
+    jwtInterceptorProvider.tokenGetter = ['store', function(store) {
         return store.get('token');
-    };
+    }];
 
     // Add a simple interceptor that will fetch all requests and add the jwt token to its authorization header.
     // NOTE: in case you are calling APIs which expect a token signed with a different secret, you might
     // want to check the delegation-token example
     $httpProvider.interceptors.push('jwtInterceptor');
-})
+}
 
-.run(function($rootScope, auth, store, jwtHelper, $location) {
+function myAppRun($rootScope, auth, store, jwtHelper, $location) {
     $rootScope.$on('$locationChangeStart', function() {
 
         var token = store.get('token');
@@ -75,4 +78,5 @@ angular.module('app', [
         }
 
     });
-});
+}
+

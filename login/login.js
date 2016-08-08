@@ -1,6 +1,6 @@
 angular.module('app').component('login', {
     templateUrl: 'login/login.html',
-    controller: loginController
+    controller: ['$scope', 'auth', loginController]
 });
 
 function loginController($scope, auth) {

@@ -1,9 +1,9 @@
 angular.module('app').component('home', {
     templateUrl: 'home/home.html',
-    $canActivate: function(authenticationService) {
+    $canActivate: ['authenticationService', function(authenticationService) {
         return authenticationService.isAuthenticated();
-    },
-    controller: homeController
+    }],
+    controller: ['$scope', 'auth', 'store', '$location', homeController]
 });
 
 function homeController($scope, auth, store, $location) {

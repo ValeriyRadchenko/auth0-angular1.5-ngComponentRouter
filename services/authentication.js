@@ -1,4 +1,4 @@
-angular.module('app').service('authenticationService', function(auth, $location) {
+angular.module('app').service('authenticationService', ['auth', '$location', function(auth, $location) {
 
     this.isAuthenticated = function() {
         if (auth.isAuthenticated) {
@@ -9,4 +9,4 @@ angular.module('app').service('authenticationService', function(auth, $location)
         return false;
     }
 
-});
+}]);
